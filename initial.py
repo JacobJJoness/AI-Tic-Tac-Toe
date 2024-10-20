@@ -7,6 +7,12 @@ class TicTacToe:
     def __init__(self):
         self.board = [" " for _ in range(9)]  # 1D list representing 3x3 grid
         self.current_winner = None  # Track winner
+        self.player_wins = 0  # Player wins counter
+        self.ai_wins = 0  # AI wins counter
+
+    def reset(self):
+        self.board = [" " for _ in range(9)]
+        self.current_winner = None
 
     def print_board(self):
         # Print board for debugging purposes
@@ -51,6 +57,9 @@ class TicTacToeGUI:
     def __init__(self, root):
         self.game = TicTacToe()
         self.root = root
+        # background color to the window
+        self.root.configure(bg="lightyellow")
+        self.root.title("Tic Tac Toe AI")
         self.buttons = [
             tk.Button(
                 root,
@@ -58,11 +67,38 @@ class TicTacToeGUI:
                 font="normal 20",
                 width=5,
                 height=2,
+                bg="lightgray",
                 command=lambda i=i: self.player_move(i),
             )
             for i in range(9)
         ]
         self.create_board()
+        # Add labels for displaying the win counters
+        self.player_label = tk.Label(
+            root,
+            text=f"Player Wins: {self.game.player_wins}",
+            font="normal 15",
+            bg="lightyellow",
+        )
+        self.player_label.grid(row=3, column=0)
+
+        self.ai_label = tk.Label(
+            root,
+            text=f"AI Wins: {self.game.ai_wins}",
+            font="normal 15",
+            bg="lightyellow",
+        )
+        self.ai_label.grid(row=3, column=2)
+
+        # Add a restart button
+        self.restart_button = tk.Button(
+            root,
+            text="Restart",
+            font="normal 15",
+            bg="lightblue",
+            command=self.restart_game,
+        )
+        self.restart_button.grid(row=4, column=1)
 
     def create_board(self):
         for i, button in enumerate(
@@ -75,23 +111,48 @@ class TicTacToeGUI:
 
     def player_move(self, i):
         if self.game.board[i] == " ":
-            self.buttons[i].config(text="X")
+            self.buttons[i].config(text="X", fg="blue")
             self.game.make_move(i, "X")
             if self.game.current_winner:
-                self.show_winner("X")
+                self.game.player_wins += 1
+                self.update_labels()
+                self.show_winner("Player")
             else:
                 self.ai_move()
 
     def ai_move(self):
         move = best_move(self.game.board)  # Use the Minimax AI to find the best move
         self.game.make_move(move, "O")
-        self.buttons[move].config(text="O")
+        self.buttons[move].config(text="O", fg="red")
         if self.game.current_winner:
-            self.show_winner("O")
+            self.game.ai_wins += 1
+            self.update_labels()
+            self.show_winner("AI")
+
+    def update_labels(self):
+        # Update the win counters
+        self.player_label.config(
+            text=f"Player Wins: {self.game.player_wins}", bg="lightyellow"
+        )
+        self.ai_label.config(text=f"AI Wins: {self.game.ai_wins}", bg="lightyellow")
 
     def show_winner(self, winner):
-        win_label = tk.Label(self.root, text=f"{winner} wins!")
+        win_label = tk.Label(
+            self.root,
+            text=f"{winner} wins!",
+            font="normal 15 bold",
+            fg="green",
+            bg="lightyellow",
+        )
         win_label.grid(row=3, column=1)
+
+    def restart_game(self):
+        # Reset the game board and internal state
+        self.game.reset()
+
+        # Reset the button labels to blank
+        for button in self.buttons:
+            button.config(text=" ", fg="black", bg="lightgray")
 
 
 if __name__ == "__main__":
