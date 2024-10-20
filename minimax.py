@@ -23,8 +23,8 @@ def minimax(board, depth, is_maximizing):
         return best_score
     # Minimizing player's turn (Human - X)
     else:
-        best_score = math.inf
-        for i in range(9):
+        best_score = math.inf  # positive infinity
+        for i in range(9):  # iterate through all possible moves
             if board[i] == " ":
                 board[i] = "X"
                 score = minimax(board, depth + 1, True)
@@ -35,9 +35,9 @@ def minimax(board, depth, is_maximizing):
 
 # Function to determine the best move for AI
 def best_move(board):
-    best_score = -math.inf
+    best_score = -math.inf  # negative infinity
     move = None
-    for i in range(9):
+    for i in range(9):  # iterate through all possible moves
         if board[i] == " ":
             board[i] = "O"
             score = minimax(board, 0, False)
@@ -48,7 +48,7 @@ def best_move(board):
     return move
 
 
-# Check winner function (similar to the one in your TicTacToe class)
+# Check winner function (similar to the one in TicTacToe class)
 def check_winner(board):
     # Check rows, columns, and diagonals for a win
     win_conditions = [
@@ -61,7 +61,7 @@ def check_winner(board):
         (0, 4, 8),
         (2, 4, 6),
     ]  # diagonals
-    for condition in win_conditions:
+    for condition in win_conditions:  # iterate through all win conditions
         if (
             board[condition[0]] == board[condition[1]] == board[condition[2]]
             and board[condition[0]] != " "
